@@ -1,0 +1,24 @@
+name: CI Workflow for Terraform
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout infrastructure code
+        uses: actions/checkout@v2
+
+      - name: Set up terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.5.7
+
+      - name: Rewrite Terraform configuration files to a canonical format and style.
+        run: terraform ft -check -recursive
+
+      - name: Validate Terraform code
+        run: terraform validate
