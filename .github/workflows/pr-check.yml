@@ -18,7 +18,7 @@ jobs:
           terraform_version: 1.5.7
 
       - name: Rewrite Terraform configuration files to a canonical format and style.
-        run: terraform ft -check -recursive
+        run: terraform fmt -check -recursive
 
       - name: Validate Terraform code
         run: terraform validate
