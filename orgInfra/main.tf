@@ -41,3 +41,23 @@ module "route_tables" {
   internet_gateway_id = module.internet_gateway.igw_id
   vpc_name            = var.vpc_name
 }
+
+# Call the Security Group module
+module "security_group" {
+  source                     = "./modules/security_groups"
+  vpc_id                     = module.vpc.vpc_id # Reference the VPC ID from the VPC module
+  security_group_name        = "${var.vpc_name}-app-sg"
+  security_group_description = "Application Security Group for web applications"
+  ingress_cidrs              = ["0.0.0.0/0"] # Adjust CIDR blocks as necessary
+}
+
+# Call the EC2 module
+module "ec2" {
+  source             = "./modules/ec2"
+  ami_id             = var.ami_id
+  instance_type      = var.instance_type
+  subnet_id          = module.subnets.public_subnet_ids[0] # Use the first public subnet
+  instance_name      = "${var.vpc_name}-instance"
+  security_group_ids = [module.security_group.security_group_id] # Adjust based on your security group module
+  key_pair_name      = var.key_pair_name
+}
