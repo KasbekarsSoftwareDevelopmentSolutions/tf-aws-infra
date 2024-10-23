@@ -1,10 +1,26 @@
+# Summary:
+# This workflow is designed to automatically check Terraform configuration files for proper formatting and validity.
+# It ensures that all Terraform files are consistently formatted and syntactically valid.
+#
+# Events:
+# - The workflow is triggered by pull requests targeting the "main" branch or when manually dispatched using `workflow_dispatch`.
+#
+# Jobs:
+# - A single job `terraform-check` is executed to perform the checks on Terraform files.
+#
+# Steps:
+# 1. Checkout code: Fetches the latest version of the code from the repository.
+# 2. Setup Terraform: Sets up the specified version of Terraform (v1.5.7) using the HashiCorp action.
+# 3. Terraform fmt: Runs the `terraform fmt` command with the `-check` and `-recursive` options to ensure consistent formatting of Terraform files.
+# 4. Terraform validate: Validates the Terraform configuration to ensure that it is syntactically correct and ready for deployment.
+
 name: Terraform Checks
 
 on:
   pull_request:
     branches: [main]
 
-  workflow_dispatch:
+  # workflow_dispatch:
 
 jobs:
   terraform-check:
