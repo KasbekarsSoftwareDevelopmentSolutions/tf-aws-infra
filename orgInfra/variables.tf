@@ -57,11 +57,6 @@ variable "key_pair_name" {
 }
 
 # Security Group Configuration
-variable "security_group_name" {
-  description = "The name of the application security group"
-  type        = string # Name for the security group that will be created
-}
-
 variable "security_group_description" {
   description = "A description for the application security group"
   type        = string
@@ -72,4 +67,100 @@ variable "ingress_cidrs" {
   description = "List of CIDR blocks for ingress rules of the security group"
   type        = list(string)
   default     = ["0.0.0.0/0"] # Default to allow traffic from anywhere; adjust as necessary for security
+}
+
+# RDS Configuration
+variable "rds_master_username" {
+  description = "The master username for the RDS instance"
+  type        = string
+}
+
+variable "rds_master_password" {
+  description = "The master password for the RDS instance"
+  type        = string
+}
+
+variable "db_engine" {
+  description = "The database engine for the RDS instance"
+  type        = string
+  default     = "mysql" # Change to "mariadb" or "postgres" if needed
+}
+
+variable "rds_allocated_storage" {
+  description = "Allocated storage for the RDS instance"
+  type        = number
+  default     = 20
+}
+
+variable "rds_storage_type" {
+  description = "Storage type for the RDS instance"
+  type        = string
+  default     = "gp2"
+}
+
+variable "rds_instance_class" {
+  description = "Instance class for the RDS instance"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "publicly_accessible" {
+  description = "Whether the RDS instance is publicly accessible"
+  type        = bool
+  default     = false
+}
+
+variable "multi_az" {
+  description = "Whether to deploy the RDS instance in multiple Availability Zones"
+  type        = bool
+  default     = false
+}
+
+variable "db_name" {
+  description = "The name of the database to create"
+  type        = string
+  default     = "csye6225"
+}
+
+variable "db_instance_identifier" {
+  description = "Identifier for the RDS instance"
+  type        = string
+  default     = "csye6225"
+}
+
+variable "rds_subnet_group_name" {
+  description = "Name for the RDS subnet group"
+  type        = string
+  default     = "csye6225-rds-subnet-group"
+}
+
+variable "rds_param_group_name" {
+  description = "Name for the RDS parameter group"
+  type        = string
+  default     = "csye6225-rds-parameter-group"
+}
+
+variable "rds_param_group_family" {
+  description = "Family of the RDS parameter group"
+  type        = string
+  default     = "mysql8.0"
+}
+
+variable "db_param_name" {
+  description = "The name of the database parameter"
+  type        = string
+  default     = "character_set_server"
+}
+
+variable "db_param_value" {
+  description = "The value of the database parameter"
+  type        = string
+  default     = "utf8mb4"
+}
+
+# RDS Security Group Configuration
+variable "allowed_cidr_blocks" {
+  description = "List of allowed CIDR blocks for the RDS security group"
+  type        = list(string)
+  default     = ["10.0.0.0/16"] # Replace with your VPC CIDR block
 }

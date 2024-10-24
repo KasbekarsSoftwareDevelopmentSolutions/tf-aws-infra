@@ -29,3 +29,28 @@ variable "key_pair_name" {
   description = "The name of the key pair to use for SSH access"
   type        = string
 }
+
+variable "rds_endpoint" {
+  description = "The endpoint of the RDS instance"
+  type        = string
+}
+
+variable "rds_port" {
+  description = "The port on which the RDS instance is listening"
+  type        = number
+}
+
+variable "db_name" {
+  description = "The name of the database"
+  type        = string
+}
+
+variable "rds_master_username" {
+  description = "The master username for the RDS instance"
+  type        = string
+}
+
+variable "rds_master_password" {
+  description = "The master password for the RDS instance"
+  type        = string
+}
