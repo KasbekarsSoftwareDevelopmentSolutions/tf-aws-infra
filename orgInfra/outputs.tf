@@ -57,3 +57,24 @@ output "private_ip" {
   description = "The private IP address of the EC2 instance"
   value       = module.ec2.private_ip
 }
+
+# RDS Outputs
+output "rds_endpoint" {
+  description = "The endpoint of the RDS instance"
+  value       = module.rds.rds_endpoint
+}
+
+output "rds_port" {
+  description = "The port on which the RDS instance is listening"
+  value       = module.rds.rds_port
+}
+
+output "db_name" {
+  description = "The name of the database"
+  value       = module.rds.db_name
+}
+
+output "rds_master_username" {
+  description = "The master username for the RDS instance"
+  value       = module.rds.rds_master_username
+}
