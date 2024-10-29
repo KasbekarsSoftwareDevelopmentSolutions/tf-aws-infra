@@ -18,7 +18,8 @@ name: Terraform Checks
 
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
   # workflow_dispatch:
 
