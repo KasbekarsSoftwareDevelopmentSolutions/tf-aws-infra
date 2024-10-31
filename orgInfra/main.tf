@@ -68,6 +68,18 @@ module "rds_security_group" {
   depends_on = [module.vpc]
 }
 
+module "s3_bucket" {
+  source               = "./modules/s3_bucket"
+  bucket_prefix        = var.bucket_prefix
+  enable_force_destroy = var.enable_force_destroy
+}
+
+module "s3_bucket_lifecycle" {
+  source          = "./modules/s3_bucket_lifecyclepolicy"
+  bucket_id       = module.s3_bucket.bucket_id
+  transition_days = var.transition_days
+}
+
 module "rds" {
   source                 = "./modules/rds"
   rds_master_username    = var.rds_master_username

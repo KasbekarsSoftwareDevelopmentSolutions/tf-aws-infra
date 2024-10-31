@@ -164,3 +164,21 @@ variable "allowed_cidr_blocks" {
   type        = list(string)
   default     = ["10.0.0.0/16"] # Replace with your VPC CIDR block
 }
+
+# S3 Bucket Configuration
+variable "bucket_prefix" {
+  description = "The name of the S3 bucket, typically a UUID for uniqueness"
+  type        = string
+}
+
+variable "transition_days" {
+  description = "Number of days before transitioning to STANDARD_IA storage class"
+  type        = number
+  default     = 30
+}
+
+variable "enable_force_destroy" {
+  description = "Force destroy S3 bucket even if not empty"
+  type        = bool
+  default     = false
+}

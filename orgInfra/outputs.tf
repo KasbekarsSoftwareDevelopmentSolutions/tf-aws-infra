@@ -78,3 +78,8 @@ output "rds_master_username" {
   description = "The master username for the RDS instance"
   value       = module.rds.rds_master_username
 }
+
+# S3 Outputs
+output "bucket_name" {
+  value = module.s3_bucket.bucket_name
+}
