@@ -1,3 +1,5 @@
+# File orgInfra/modules/ec2/main.tf
+
 resource "aws_instance" "my_ec2_instance" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
@@ -21,6 +23,9 @@ resource "aws_instance" "my_ec2_instance" {
   echo "spring.datasource.url=jdbc:mysql://${var.rds_endpoint}/${var.db_name}" > /opt/connection_string.txt
   echo "spring.datasource.username=${var.rds_master_username}" >> /opt/connection_string.txt
   echo "spring.datasource.password=${var.rds_master_password}" >> /opt/connection_string.txt
+  echo "cloud.aws.s3.bucket-name=${var.bucket_name}" >> /opt/connection_string.txt
+  echo "cloud.aws.credentials.access-key=${var.access_key}" >> /opt/connection_string.txt
+  echo "cloud.aws.credentials.secret-key=${var.secret_access_key}" >> /opt/connection_string.txt
 
   # Remove ":3306" from the spring.datasource.url line in connection_string.txt
   sudo sed -i '/^spring.datasource.url/s/:3306//' /opt/connection_string.txt
@@ -35,6 +40,9 @@ resource "aws_instance" "my_ec2_instance" {
   echo "SPRING_DATASOURCE_URL=$(grep spring.datasource.url /opt/cloudNativeApplicationFolder/connection_string.txt | cut -d '=' -f2)" | sudo tee /etc/cloud-native-app.env
   echo "SPRING_DATASOURCE_USERNAME=$(grep spring.datasource.username /opt/cloudNativeApplicationFolder/connection_string.txt | cut -d '=' -f2)" | sudo tee -a /etc/cloud-native-app.env
   echo "SPRING_DATASOURCE_PASSWORD=$(grep spring.datasource.password /opt/cloudNativeApplicationFolder/connection_string.txt | cut -d '=' -f2)" | sudo tee -a /etc/cloud-native-app.env
+  echo "CLOUD_AWS_S3_BUCKET_NAME=$(grep cloud.aws.s3.bucket-name /opt/cloudNativeApplicationFolder/connection_string.txt | cut -d '=' -f2)" | sudo tee -a /etc/cloud-native-app.env
+  echo "CLOUD_AWS_CREDENTIALS_ACCESS_KEY=$(grep cloud.aws.credentials.access-key /opt/cloudNativeApplicationFolder/connection_string.txt | cut -d '=' -f2)" | sudo tee -a /etc/cloud-native-app.env
+  echo "CLOUD_AWS_CREDENTIALS_SECRET_KEY=$(grep cloud.aws.credentials.secret-key /opt/cloudNativeApplicationFolder/connection_string.txt | cut -d '=' -f2)" | sudo tee -a /etc/cloud-native-app.env
 
   # Update the EnvironmentFile path in the service file
   sudo sed -i 's|EnvironmentFile=.*|EnvironmentFile=/etc/cloud-native-app.env|' /etc/systemd/system/cloud-native-app.service

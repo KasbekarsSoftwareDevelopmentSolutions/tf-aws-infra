@@ -1,4 +1,5 @@
-# orgInfra/modules/s3_bucket_lifecyclepolicy/main.tf
+# File orgInfra/modules/s3_bucket_lifecyclepolicy/main.tf
+
 resource "aws_s3_bucket_lifecycle_configuration" "my_bucket_lifecycle" {
   bucket = var.bucket_id
 

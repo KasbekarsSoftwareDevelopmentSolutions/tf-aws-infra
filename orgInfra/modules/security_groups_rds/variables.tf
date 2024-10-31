@@ -1,3 +1,5 @@
+# File orgInfra/modules/security_groups_rds/variables.tf
+
 variable "vpc_id" {
   description = "The ID of the VPC where the security group will be created"
   type        = string

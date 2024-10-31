@@ -1,3 +1,5 @@
+# File orgInfra/modules/security_groups/main.tf
+
 resource "aws_security_group" "my_security_group" {
   name        = var.security_group_name
   description = var.security_group_description

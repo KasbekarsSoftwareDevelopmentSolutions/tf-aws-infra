@@ -1,3 +1,5 @@
+# File orgInfra/outputs.tf
+
 # VPC Outputs
 output "vpc_id" {
   description = "The ID of the VPC"

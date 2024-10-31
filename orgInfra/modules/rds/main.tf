@@ -1,3 +1,5 @@
+# File orgInfra/modules/rds/main.tf
+
 resource "aws_db_instance" "rds_instance" {
   allocated_storage      = var.rds_allocated_storage
   storage_type           = var.rds_storage_type

@@ -1,3 +1,5 @@
+# File orgInfra/modules/route_tables/variables.tf
+
 variable "vpc_id" {
   description = "The ID of the VPC"
   type        = string

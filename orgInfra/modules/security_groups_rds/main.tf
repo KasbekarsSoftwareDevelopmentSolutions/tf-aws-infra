@@ -1,3 +1,5 @@
+# File orgInfra/modules/security_groups_rds/main.tf
+
 resource "aws_security_group" "rds_security_group" {
   name        = var.rds_security_group_name
   description = "Security group for the RDS instance"

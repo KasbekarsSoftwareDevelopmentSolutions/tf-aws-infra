@@ -1,4 +1,5 @@
-# orgInfra/modules/s3_bucket_lifecyclepolicy/variables.tf
+# File orgInfra/modules/s3_bucket_lifecyclepolicy/variables.tf
+
 variable "bucket_id" {
   description = "ID of the S3 bucket to attach the lifecycle policy to"
   type        = string
