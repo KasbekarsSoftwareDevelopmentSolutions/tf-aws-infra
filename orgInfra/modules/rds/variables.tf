@@ -1,3 +1,5 @@
+# File orgInfra/modules/rds/variables.tf
+
 variable "rds_master_username" {
   description = "The master username for the RDS instance"
   type        = string

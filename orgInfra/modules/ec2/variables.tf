@@ -1,3 +1,5 @@
+# File orgInfra/modules/ec2/variables.tf
+
 variable "ami_id" {
   description = "The AMI ID for the custom image"
   type        = string
@@ -52,5 +54,20 @@ variable "rds_master_username" {
 
 variable "rds_master_password" {
   description = "The master password for the RDS instance"
+  type        = string
+}
+
+variable "bucket_name" {
+  description = "S3 Bucket name."
+  type        = string
+}
+
+variable "access_key" {
+  description = "Access Key for the ec2_user."
+  type        = string
+}
+
+variable "secret_access_key" {
+  description = "Secret access key for the ec2_user."
   type        = string
 }

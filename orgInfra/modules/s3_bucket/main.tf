@@ -1,4 +1,5 @@
-# orgInfra/modules/s3_bucket/main.tf
+# File orgInfra/modules/s3_bucket/main.tf
+
 resource "random_id" "s3_bucket_uuid" {
   byte_length = 8
 }

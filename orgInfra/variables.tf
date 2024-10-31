@@ -1,3 +1,5 @@
+# File orgInfra/variables.tf
+
 # AWS Provider Configuration
 variable "aws_profile" {
   description = "The AWS CLI profile to use"
@@ -181,4 +183,24 @@ variable "enable_force_destroy" {
   description = "Force destroy S3 bucket even if not empty"
   type        = bool
   default     = false
+}
+
+# variable "bucket_name" {
+#   description = "S3 Bucket Name"
+#   type        = string
+# }
+
+variable "ec2_user_access_key" {
+  description = "Access key of the ec2_user."
+  type        = string
+}
+
+variable "ec2_user_secret_access_key" {
+  description = "Secret access key of the ec2_user."
+  type        = string
+}
+
+variable "domain_name" {
+  description = "My Domain Name"
+  type        = string
 }

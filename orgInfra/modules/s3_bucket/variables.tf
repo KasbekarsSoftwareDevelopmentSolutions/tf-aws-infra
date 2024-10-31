@@ -1,4 +1,5 @@
-# orgInfra/modules/s3_bucket/variables.tf
+# File orgInfra/modules/s3_bucket/variables.tf
+
 variable "bucket_prefix" {
   description = "Prefix for the S3 bucket name"
   type        = string

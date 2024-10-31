@@ -1,3 +1,4 @@
+# File orgInfra/main.tf
 terraform {
   required_version = ">= 1.5.7"
   required_providers {
@@ -8,6 +9,9 @@ terraform {
   }
 }
 
+data "aws_route53_zone" "selected" {
+  name = var.domain_name
+}
 
 # Call the VPC module
 module "vpc" {
@@ -78,6 +82,8 @@ module "s3_bucket_lifecycle" {
   source          = "./modules/s3_bucket_lifecyclepolicy"
   bucket_id       = module.s3_bucket.bucket_id
   transition_days = var.transition_days
+
+  depends_on = [module.s3_bucket]
 }
 
 module "rds" {
@@ -107,9 +113,9 @@ module "ec2" {
   source             = "./modules/ec2"
   ami_id             = var.ami_id
   instance_type      = var.instance_type
-  subnet_id          = module.subnets.public_subnet_ids[0] # Use the first public subnet
+  subnet_id          = module.subnets.public_subnet_ids[0]
   instance_name      = "${var.vpc_name}-instance"
-  security_group_ids = [module.security_group.security_group_id] # Adjust based on your security group module
+  security_group_ids = [module.security_group.security_group_id]
   key_pair_name      = var.key_pair_name
 
   # Pass the RDS outputs
@@ -117,7 +123,17 @@ module "ec2" {
   rds_port            = module.rds.rds_port
   db_name             = module.rds.db_name
   rds_master_username = module.rds.rds_master_username
-  rds_master_password = var.rds_master_password # You may also want to pass this securely
+  rds_master_password = var.rds_master_password
+  bucket_name         = module.s3_bucket.bucket_name
+  access_key          = var.ec2_user_access_key
+  secret_access_key   = var.ec2_user_secret_access_key
 
-  depends_on = [module.subnets, module.rds]
+  depends_on = [module.subnets, module.rds, module.s3_bucket]
+}
+
+module "route_53" {
+  source        = "./modules/route_53"
+  zone_id       = data.aws_route53_zone.selected.zone_id
+  zone_name     = data.aws_route53_zone.selected.name
+  ec2_public_ip = module.ec2.public_ip
 }
