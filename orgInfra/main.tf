@@ -1,4 +1,4 @@
-# File orgInfra/main.tf
+# File orgInfra/main.tf To check if the workflow setup works.
 terraform {
   required_version = ">= 1.5.7"
   required_providers {
