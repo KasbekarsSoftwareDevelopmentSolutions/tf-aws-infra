@@ -52,6 +52,14 @@ module "route_tables" {
   depends_on = [module.vpc, module.subnets, module.internet_gateway]
 }
 
+# IAM Roles Configuration
+module "iam_roles" {
+  source                = "./modules/iam_roles"
+  iam_role_name         = var.iam_role_name
+  iam_policy_arns       = var.iam_policy_arns
+  trusted_aws_principal = var.trusted_aws_principal
+}
+
 # Call the Security Group module
 module "security_group" {
   source                     = "./modules/security_groups"
@@ -117,6 +125,8 @@ module "ec2" {
   instance_name      = "${var.vpc_name}-instance"
   security_group_ids = [module.security_group.security_group_id]
   key_pair_name      = var.key_pair_name
+
+  iam_instance_profile = module.iam_roles.iam_instance_profile_name
 
   # Pass the RDS outputs
   rds_endpoint        = module.rds.rds_endpoint

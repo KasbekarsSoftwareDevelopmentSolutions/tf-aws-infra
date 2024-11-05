@@ -6,6 +6,7 @@ resource "aws_instance" "my_ec2_instance" {
   subnet_id              = var.subnet_id
   key_name               = var.key_pair_name
   vpc_security_group_ids = var.security_group_ids
+  iam_instance_profile   = var.iam_instance_profile
 
   tags = {
     Name = var.instance_name
@@ -50,14 +51,20 @@ resource "aws_instance" "my_ec2_instance" {
   # Update the ExecStart line to use the environment variables from the .env file
   sudo sed -i 's|ExecStart=.*|ExecStart=/usr/bin/java -jar /opt/cloudNativeApplicationFolder/movieRetirvalWebApp-0.0.1-SNAPSHOT.jar --spring.datasource.url=\$${SPRING_DATASOURCE_URL} --spring.datasource.username=\$${SPRING_DATASOURCE_USERNAME} --spring.datasource.password=\$${SPRING_DATASOURCE_PASSWORD}|' /etc/systemd/system/cloud-native-app.service
 
+  # Configure the CLoud Watch Agent
+  sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/cloudwatch-config.json
+
   # Reload systemd to apply changes
   sudo systemctl daemon-reload
 
   # Enable the service to start on boot
   sudo systemctl enable cloud-native-app.service
+  sudo systemctl enable amazon-cloudwatch-agent.service
 
   # Restart the application service
+  sudo systemctl start amazon-cloudwatch-agent.service
   sudo systemctl start cloud-native-app.service
+
 
 EOF
 
