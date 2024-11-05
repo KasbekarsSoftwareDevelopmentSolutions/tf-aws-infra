@@ -204,3 +204,19 @@ variable "domain_name" {
   description = "My Domain Name"
   type        = string
 }
+
+# IAM Roles Configurations
+variable "iam_role_name" {
+  description = "The name of the IAM role for EC2 CloudWatch Agent setup"
+  type        = string
+}
+
+variable "iam_policy_arns" {
+  description = "List of IAM policy ARNs to attach to the role"
+  type        = list(string)
+}
+
+variable "trusted_aws_principal" {
+  description = "AWS principal allowed to assume this IAM role"
+  type        = string
+}

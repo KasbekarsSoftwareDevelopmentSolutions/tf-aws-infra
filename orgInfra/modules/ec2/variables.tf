@@ -71,3 +71,9 @@ variable "secret_access_key" {
   description = "Secret access key for the ec2_user."
   type        = string
 }
+
+variable "iam_instance_profile" {
+  description = "The name of the IAM instance profile to attach to the EC2 instance"
+  type        = string
+  default     = null
+}
