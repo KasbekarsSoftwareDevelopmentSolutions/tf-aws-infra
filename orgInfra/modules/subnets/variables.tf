@@ -23,5 +23,4 @@ variable "availability_zones" {
 variable "vpc_name" {
   description = "Name of the VPC"
   type        = string
-  default     = "my_vpc"
 }

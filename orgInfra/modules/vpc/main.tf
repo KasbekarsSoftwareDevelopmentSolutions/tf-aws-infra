@@ -9,7 +9,3 @@ resource "aws_vpc" "this" {
     Name = "${var.vpc_name}-vpc"
   }
 }
-
-output "vpc_id" {
-  value = aws_vpc.this.id
-}

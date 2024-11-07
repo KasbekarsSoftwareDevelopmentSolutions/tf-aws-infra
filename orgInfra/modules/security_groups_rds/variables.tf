@@ -8,7 +8,6 @@ variable "vpc_id" {
 variable "rds_security_group_name" {
   description = "The name of the security group"
   type        = string
-  default     = "csye6225-rds-sg"
 }
 
 variable "security_group_id" {
@@ -16,8 +15,8 @@ variable "security_group_id" {
   type        = string
 }
 
-variable "allowed_cidr_blocks" {
-  description = "List of CIDR blocks that can access the RDS instance"
-  type        = list(string)
-  default     = ["10.0.0.0/16"] # Replace with your private network range
-}
+# variable "allowed_cidr_blocks" {
+#   description = "List of CIDR blocks that can access the RDS instance"
+#   type        = list(string)
+#   default     = ["10.0.0.0/16"] # Replace with your private network range
+# }

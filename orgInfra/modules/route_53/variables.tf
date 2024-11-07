@@ -10,7 +10,17 @@ variable "zone_name" {
   type        = string
 }
 
-variable "ec2_public_ip" {
-  description = "Public of the Ec2 Instance."
+# variable "ec2_public_ip" {
+#   description = "Public of the Ec2 Instance."
+#   type        = string
+# }
+
+variable "load_balancer_dns_name" {
+  description = "DNS name of the load balancer"
+  type        = string
+}
+
+variable "load_balancer_zone_id" {
+  description = "Hosted zone ID of the load balancer"
   type        = string
 }
