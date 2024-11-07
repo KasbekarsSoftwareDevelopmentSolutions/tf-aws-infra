@@ -45,20 +45,20 @@ output "security_group_name" {
   value       = module.security_group.security_group_name
 }
 
-output "instance_id" {
-  description = "The ID of the EC2 instance"
-  value       = module.ec2.instance_id
-}
+# output "instance_id" {
+#   description = "The ID of the EC2 instance"
+#   value       = module.ec2.instance_id
+# }
 
-output "public_ip" {
-  description = "The public IP address of the EC2 instance"
-  value       = module.ec2.public_ip
-}
+# output "public_ip" {
+#   description = "The public IP address of the EC2 instance"
+#   value       = module.ec2.public_ip
+# }
 
-output "private_ip" {
-  description = "The private IP address of the EC2 instance"
-  value       = module.ec2.private_ip
-}
+# output "private_ip" {
+#   description = "The private IP address of the EC2 instance"
+#   value       = module.ec2.private_ip
+# }
 
 # RDS Outputs
 output "rds_endpoint" {

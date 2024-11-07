@@ -4,13 +4,11 @@
 variable "aws_profile" {
   description = "The AWS CLI profile to use"
   type        = string
-  default     = "aadityaDevelopmentUser" # Default profile for AWS CLI authentication
 }
 
 variable "aws_region" {
   description = "The AWS region to create the VPC and its resources in"
   type        = string
-  default     = "us-east-1" # Default AWS region for resource deployment
 }
 
 # VPC Configuration
@@ -58,17 +56,27 @@ variable "key_pair_name" {
   type        = string # Key pair name to allow SSH access to the EC2 instance
 }
 
-# Security Group Configuration
-variable "security_group_description" {
+# Application Security Group Configuration
+variable "app_securitygroup_description" {
   description = "A description for the application security group"
   type        = string
   default     = "Application Security Group for web applications" # Default description for the security group
 }
 
-variable "ingress_cidrs" {
-  description = "List of CIDR blocks for ingress rules of the security group"
-  type        = list(string)
-  default     = ["0.0.0.0/0"] # Default to allow traffic from anywhere; adjust as necessary for security
+# variable "ingress_cidrs" {
+#   description = "List of CIDR blocks for ingress rules of the security group"
+#   type        = list(string)
+#   default     = ["0.0.0.0/0"] # Default to allow traffic from anywhere; adjust as necessary for security
+# }
+
+variable "ssh_port" {
+  description = "The port on which ssh connection is allowed to instance."
+  type        = number
+}
+
+variable "application_port" {
+  description = "The port on which the application expects and accepts the request traffic"
+  type        = number
 }
 
 # RDS Configuration
@@ -185,11 +193,6 @@ variable "enable_force_destroy" {
   default     = false
 }
 
-# variable "bucket_name" {
-#   description = "S3 Bucket Name"
-#   type        = string
-# }
-
 variable "ec2_user_access_key" {
   description = "Access key of the ec2_user."
   type        = string
@@ -211,12 +214,64 @@ variable "iam_role_name" {
   type        = string
 }
 
-variable "iam_policy_arns" {
-  description = "List of IAM policy ARNs to attach to the role"
-  type        = list(string)
+variable "iam_policy_arn_AmazonSSMManagedInstanceCore" {
+  description = "IAM policy AmazonSSMManagedInstanceCore ARN to attach to the role"
+  type        = string
+}
+
+variable "iam_policy_arn_CloudWatchAgentServerPolicy" {
+  description = "IAM policy CloudWatchAgentServerPolicy ARN to attach to the role"
+  type        = string
 }
 
 variable "trusted_aws_principal" {
   description = "AWS principal allowed to assume this IAM role"
   type        = string
+}
+
+# Load Balancer Configurations
+variable "listener_port_lb" {
+  description = "The port on the load balancer will expect traffic."
+  type        = number
+}
+
+variable "healthcheck_interval" {
+  description = "The interval (in seconds) between health checks for the target group."
+  type        = number
+}
+
+# Auto Scalling Group Configurations
+variable "inst_min_size" {
+  description = "The minimum number of instances that the Auto Scaling Group should maintain at all times."
+  type        = number
+}
+
+variable "inst_max_size" {
+  description = "The maximum number of instances that the Auto Scaling Group can scale up to."
+  type        = number
+}
+
+variable "inst_desired_capacity" {
+  description = "The initial number of instances the Auto Scaling Group will launch when it is first created or updated."
+  type        = number
+}
+
+variable "inst_environment" {
+  description = "Ec2 Instance Environment to be launched in."
+  type        = string
+}
+
+variable "inst_cooldown_period" {
+  description = "The cooldown field in an Auto Scaling configuration defines the amount of time (in seconds) that the Auto Scaling Group (ASG) waits before taking another scaling action after a previous scaling activity."
+  type        = number
+}
+
+variable "upscale_cpu_utilization_percent" {
+  description = "The ASG will monitor the average CPU utilization of all instances in the group and adjust the number of instances to keep the CPU utilization close to this target value."
+  type        = number
+}
+
+variable "downscale_cpu_utilization_percent" {
+  description = "The ASG will monitor the average CPU utilization of all instances in the group and adjust the number of instances to keep the CPU utilization close to this target value."
+  type        = number
 }
