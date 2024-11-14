@@ -38,7 +38,6 @@ variable "target_group_arns" {
 variable "cooldown" {
   description = "Cooldown period for scaling actions"
   type        = number
-  default     = 60
 }
 
 variable "environment" {

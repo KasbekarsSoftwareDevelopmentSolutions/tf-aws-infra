@@ -15,6 +15,10 @@ resource "aws_launch_template" "app_launch_template" {
     name = var.iam_instance_profile
   }
 
+  monitoring {
+    enabled = true
+  }
+
   user_data = base64encode(<<-EOF
   #!/bin/bash
   set -e
