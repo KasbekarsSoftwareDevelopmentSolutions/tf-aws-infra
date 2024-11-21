@@ -61,3 +61,53 @@ resource "aws_iam_policy" "custom_ec2user_s3_policy" {
     ]
   })
 }
+
+# Custom SNS Policy
+resource "aws_iam_policy" "custom_ec2user_sns_publish_policy" {
+  name        = "custom_ec2user_sns_publish_policy"
+  description = "Policy to allow EC2 instances to publish to SNS topic"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "sns:Publish"
+        Resource = var.sns_topic_arn
+      }
+    ]
+  })
+}
+
+# Custom AWS Lambda Policy
+resource "aws_iam_policy" "custom_lambda_rds_access_policy" {
+  name        = "custom_lambda_rds_access_policy"
+  description = "Policy to allow Lambda function to access RDS instance"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "rds:DescribeDBInstances",
+          "rds:Connect"
+        ]
+        Resource = var.rds_arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "custom_lambda_sns_access_policy" {
+  name        = "custom_lambda_sns_access_policy"
+  description = "Policy to allow Lambda function to access SNS"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "sns:Publish"
+        Resource = var.sns_topic_arn
+      }
+    ]
+  })
+}

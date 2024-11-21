@@ -25,3 +25,9 @@ resource "aws_s3_bucket_public_access_block" "my_private_bucket" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
+
+resource "aws_s3_object" "lambda_jar" {
+  bucket = aws_s3_bucket.s3_bucket.bucket
+  key    = var.java_binaries_key
+  source = var.service_file_path
+}

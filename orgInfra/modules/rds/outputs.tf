@@ -19,3 +19,8 @@ output "rds_master_username" {
   description = "The master username for the RDS instance"
   value       = aws_db_instance.rds_instance.username
 }
+
+output "rds_arn" {
+  description = "The ARN of the RDS database."
+  value       = aws_db_instance.rds_instance.arn
+}

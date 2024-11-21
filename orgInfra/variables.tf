@@ -181,6 +181,15 @@ variable "bucket_prefix" {
   type        = string
 }
 
+variable "verification_service_bin_path" {
+  description = "The file path to the binaries of the service to be deployed using AWS Lambda Function."
+  type        = string
+}
+
+variable "verification_service_java_bin_key" {
+  description = "The S3 bucket key where the verification serivce binaries will be present."
+}
+
 variable "transition_days" {
   description = "Number of days before transitioning to STANDARD_IA storage class"
   type        = number
@@ -214,13 +223,23 @@ variable "iam_role_name" {
   type        = string
 }
 
-variable "iam_policy_arn_AmazonSSMManagedInstanceCore" {
+variable "iam_lambda_role_name" {
+  description = "The name of the IAM role for the AWS Lambda to access the SNS and RDS."
+  type        = string
+}
+
+variable "iam_policy_AmazonSSMManagedInstanceCore_arn" {
   description = "IAM policy AmazonSSMManagedInstanceCore ARN to attach to the role"
   type        = string
 }
 
-variable "iam_policy_arn_CloudWatchAgentServerPolicy" {
+variable "iam_policy_CloudWatchAgentServerPolicy_arn" {
   description = "IAM policy CloudWatchAgentServerPolicy ARN to attach to the role"
+  type        = string
+}
+
+variable "iam_policy_AWSLambdaVPCAccessExecutionRole_arn" {
+  description = "Provides minimum permissions for a Lambda function to execute while accessing a resource within a VPC - create, describe, delete network interfaces and write permissions to CloudWatch Logs."
   type        = string
 }
 
@@ -274,4 +293,40 @@ variable "upscale_cpu_utilization_percent" {
 variable "downscale_cpu_utilization_percent" {
   description = "The ASG will monitor the average CPU utilization of all instances in the group and adjust the number of instances to keep the CPU utilization close to this target value."
   type        = number
+}
+
+# SNS Configurations
+variable "name_of_sns_topic" {
+  description = "The name of the AWS SNS topics."
+}
+
+# Aws Lambda Function configurations
+variable "lambda_function_name" {
+  description = "The of the AWS Lambda Function."
+  type        = string
+}
+
+variable "lambda_function_handler" {
+  description = "The name od the AWS Lambda Handler file."
+  type        = string
+}
+
+variable "lambda_function_runtime_env" {
+  description = "The AWS Lambda runtime. On which programming language the lamdba function will run the give binary file."
+  type        = string
+}
+
+variable "lambda_function_architecture" {
+  description = "The architecture for the Lambda function. Supported values are x86_64 or arm64."
+  type        = string
+}
+
+variable "mailgun_api_key" {
+  description = "The MailGun account API Key."
+  type        = string
+}
+
+variable "mailgun_domain" {
+  description = "The mailgun domain to be used by the service, to send emails."
+  type        = string
 }
