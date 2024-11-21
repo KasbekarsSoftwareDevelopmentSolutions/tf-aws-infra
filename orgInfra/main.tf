@@ -58,6 +58,8 @@ module "s3_bucket" {
   source               = "./modules/s3_bucket"
   bucket_prefix        = var.bucket_prefix
   enable_force_destroy = var.enable_force_destroy
+  service_file_path    = var.verification_service_bin_path
+  java_binaries_key    = var.verification_service_java_bin_key
 }
 
 # Call the S3 Bucket Lifecycle module
@@ -71,22 +73,29 @@ module "s3_bucket_lifecycle" {
 
 # Call the IAM Policies Configuration module
 module "policies" {
-  source      = "./modules/policies"
-  bucket_name = module.s3_bucket.bucket_name
+  source        = "./modules/policies"
+  bucket_name   = module.s3_bucket.bucket_name
+  sns_topic_arn = module.sns.sns_topic_arn
+  rds_arn       = module.rds.rds_arn
 
-  depends_on = [module.s3_bucket]
+  depends_on = [module.s3_bucket, module.sns, module.rds]
 }
 
 # Call the IAM Roles Configuration module
 module "iam_roles" {
-  source                                       = "./modules/iam_roles"
-  iam_role_name                                = var.iam_role_name
-  iam_policy_arn_AmazonSSMManagedInstanceCore  = var.iam_policy_arn_AmazonSSMManagedInstanceCore
-  iam_policy_arn_CloudWatchAgentServerPolicy   = var.iam_policy_arn_CloudWatchAgentServerPolicy
-  iam_policy_arn_customCloudWatchLogPolicy     = module.policies.custom_cloudwatch_log_policy_arn
-  iam_policy_arn_customCloudWatchMetricsPolicy = module.policies.custom_cloudwatch_metrics_policy_arn
-  iam_policy_arn_customEc2UserS3Policy         = module.policies.custom_ec2user_s3_policy_arn
-  trusted_aws_principal                        = var.trusted_aws_principal
+  source                                         = "./modules/iam_roles"
+  iam_role_name                                  = var.iam_role_name
+  iam_lambda_role_name                           = var.iam_lambda_role_name
+  iam_policy_arn_AmazonSSMManagedInstanceCore    = var.iam_policy_AmazonSSMManagedInstanceCore_arn
+  iam_policy_arn_CloudWatchAgentServerPolicy     = var.iam_policy_CloudWatchAgentServerPolicy_arn
+  iam_policy_arn_customCloudWatchLogPolicy       = module.policies.custom_cloudwatch_log_policy_arn
+  iam_policy_arn_customCloudWatchMetricsPolicy   = module.policies.custom_cloudwatch_metrics_policy_arn
+  iam_policy_arn_customEc2UserS3Policy           = module.policies.custom_ec2user_s3_policy_arn
+  iam_policy_arn_customEc2UserSNSPolicy          = module.policies.custom_ec2user_sns_publish_policy_arn
+  iam_policy_arn_customLambdaRDSAccessPolicy     = module.policies.custom_lambda_rds_access_policy_arn
+  iam_policy_arn_customLambdaSNSAccessPolicy     = module.policies.custom_lambda_sns_access_policy_arn
+  iam_policy_arn_AWSLambdaVPCAccessExecutionRole = var.iam_policy_AWSLambdaVPCAccessExecutionRole_arn
+  trusted_aws_principal                          = var.trusted_aws_principal
 
   depends_on = [module.policies]
 }
@@ -171,6 +180,50 @@ module "load_balancer" {
   app_healthcheck_interval = var.healthcheck_interval
 
   depends_on = [module.vpc, module.subnets, module.load_balancer_security_group]
+}
+
+# Call the Aws Lambda Security Group Module
+module "security_groups_lambda" {
+  source                     = "./modules/security_groups_lambda"
+  lambda_security_group_name = "${var.vpc_name}-lambda-sg"
+  vpc_id                     = module.vpc.vpc_id
+
+  depends_on = [module.vpc]
+}
+
+# Call the Aws SNS module
+module "sns" {
+  source         = "./modules/sns"
+  sns_topic_name = var.name_of_sns_topic
+}
+
+# Call the Aws Lambda Function Module
+module "lambda" {
+  source                      = "./modules/lambda"
+  lambda_function_name        = var.lambda_function_name
+  lambda_function_handler     = var.lambda_function_handler
+  lambda_function_runtime_env = var.lambda_function_runtime_env
+  lambda_architecture         = var.lambda_function_architecture
+  iam_lambda_role_arn         = module.iam_roles.iam_lambda_role_arn
+  rds_security_group_id       = module.rds_security_group.rds_security_group_id
+  s3_lambda_bin_bucket_name   = module.s3_bucket.bucket_name
+  s3_lambda_bin_key           = module.s3_bucket.java_binaries_key
+  rds_master_username         = var.rds_master_username
+  rds_master_password         = var.rds_master_password
+  rds_endpoint                = module.rds.rds_endpoint
+  mailgun_api_key             = var.mailgun_api_key
+  mailgun_domain              = var.mailgun_domain
+  private_subnet_ids          = module.subnets.private_subnet_ids
+
+  depends_on = [module.iam_roles, module.rds_security_group, module.s3_bucket, module.subnets]
+}
+
+module "subscriptions_permissions" {
+  source              = "./modules/subscriptions_permissions"
+  lambda_function_arn = module.lambda.verification_service_lambda_arn
+  sns_topic_arn       = module.sns.sns_topic_arn
+
+  depends_on = [module.lambda, module.sns]
 }
 
 # Call the EC2 module
