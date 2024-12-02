@@ -175,6 +175,17 @@ module "rds" {
 
   depends_on = [module.subnets, module.rds_security_group]
 }
+
+# Import SSL Certificate into ACM
+module "acm" {
+  source            = "./modules/acm"
+  certificate_name  = var.certificate_name
+  private_key       = file(var.private_key_path)
+  certificate_body  = file(var.certificate_body_path)
+  certificate_chain = file(var.certificate_chain_path)
+
+}
+
 # Call the Load Balancer module
 module "load_balancer" {
   source                   = "./modules/load_balancer"
@@ -189,6 +200,7 @@ module "load_balancer" {
   listener_port            = var.listener_port_lb
   listener_protocol        = "HTTP"
   app_healthcheck_interval = var.healthcheck_interval
+  certificate_arn          = module.acm.acm_certificate_arn
 
   depends_on = [module.vpc, module.subnets, module.load_balancer_security_group]
 }

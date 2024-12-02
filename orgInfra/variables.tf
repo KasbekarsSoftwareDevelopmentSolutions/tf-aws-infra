@@ -335,3 +335,23 @@ variable "base_url" {
   description = "The base URL for the application."
   type        = string
 }
+
+variable "certificate_name" {
+  description = "Name of the SSL certificate"
+  type        = string
+}
+
+variable "private_key_path" {
+  description = "Path to the private key file"
+  type        = string
+}
+
+variable "certificate_body_path" {
+  description = "Path to the certificate body file"
+  type        = string
+}
+
+variable "certificate_chain_path" {
+  description = "Path to the certificate chain file"
+  type        = string
+}
