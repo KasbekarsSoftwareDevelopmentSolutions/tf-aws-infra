@@ -53,6 +53,17 @@ module "route_tables" {
   depends_on = [module.vpc, module.subnets, module.internet_gateway]
 }
 
+# Call the Network Access Gateway module
+module "nat" {
+  source                 = "./modules/nat"
+  nat_gateway_name       = "${var.vpc_name}-nat"
+  public_subnet_id       = module.subnets.public_subnet_ids[0]
+  eip_name               = "${var.vpc_name}-eip"
+  private_route_table_id = module.route_tables.private_route_table_id
+
+  depends_on = [module.subnets, module.route_tables]
+}
+
 # Call the S3 Bucket module
 module "s3_bucket" {
   source               = "./modules/s3_bucket"
@@ -208,12 +219,10 @@ module "lambda" {
   rds_security_group_id       = module.rds_security_group.rds_security_group_id
   s3_lambda_bin_bucket_name   = module.s3_bucket.bucket_name
   s3_lambda_bin_key           = module.s3_bucket.java_binaries_key
-  rds_master_username         = var.rds_master_username
-  rds_master_password         = var.rds_master_password
-  rds_endpoint                = module.rds.rds_endpoint
   mailgun_api_key             = var.mailgun_api_key
   mailgun_domain              = var.mailgun_domain
   private_subnet_ids          = module.subnets.private_subnet_ids
+  base_url                    = var.base_url
 
   depends_on = [module.iam_roles, module.rds_security_group, module.s3_bucket, module.subnets]
 }
@@ -265,6 +274,7 @@ module "launch_template" {
   rds_master_password  = var.rds_master_password
   db_name              = module.rds.db_name
   bucket_name          = module.s3_bucket.bucket_name
+  cloud_sns_topic_arn  = module.sns.sns_topic_arn
   access_key           = var.ec2_user_access_key
   secret_access_key    = var.ec2_user_secret_access_key
 

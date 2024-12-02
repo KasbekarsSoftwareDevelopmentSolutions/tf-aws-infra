@@ -45,16 +45,6 @@ variable "s3_lambda_bin_key" {
   type        = string
 }
 
-variable "rds_master_username" {
-  description = "The master username for the RDS instance"
-  type        = string
-}
-
-variable "rds_master_password" {
-  description = "The master password for the RDS instance"
-  type        = string
-}
-
 variable "mailgun_api_key" {
   description = "The MailGun account API Key."
   type        = string
@@ -65,7 +55,7 @@ variable "mailgun_domain" {
   type        = string
 }
 
-variable "rds_endpoint" {
-  description = "The RDS database endpoint to connect with the service"
+variable "base_url" {
+  description = "The base URL for the application."
+  type        = string
 }
-

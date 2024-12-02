@@ -9,13 +9,13 @@ resource "aws_lambda_function" "verification_service_lambda" {
   s3_bucket = var.s3_lambda_bin_bucket_name
   s3_key    = var.s3_lambda_bin_key
 
+  timeout = 30
+
   environment {
     variables = {
       MAILGUN_API_KEY = var.mailgun_api_key
       MAILGUN_DOMAIN  = var.mailgun_domain
-      DB_ENDPOINT     = var.rds_endpoint
-      DB_USERNAME     = var.rds_master_username
-      DB_PASSWORD     = var.rds_master_password
+      BASE_URL        = var.base_url
     }
   }
 
