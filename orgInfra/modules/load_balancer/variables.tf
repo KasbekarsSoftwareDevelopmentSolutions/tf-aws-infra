@@ -53,3 +53,8 @@ variable "app_healthcheck_interval" {
   description = "Interval after which health check is performed by the Load Balancer Taget Group."
   type        = number
 }
+
+variable "certificate_arn" {
+  description = "Certificate ARN for SSL"
+  type        = string
+}
