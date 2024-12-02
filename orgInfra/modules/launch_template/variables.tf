@@ -64,3 +64,8 @@ variable "secret_access_key" {
   description = "AWS secret access key"
   type        = string
 }
+
+variable "cloud_sns_topic_arn" {
+  description = "The ARN of the SNS Topic on which messages are to be published."
+  type        = string
+}

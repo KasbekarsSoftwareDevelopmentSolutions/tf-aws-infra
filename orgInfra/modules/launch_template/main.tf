@@ -31,6 +31,7 @@ resource "aws_launch_template" "app_launch_template" {
   echo "spring.datasource.username=${var.rds_master_username}" >> /opt/connection_string.txt
   echo "spring.datasource.password=${var.rds_master_password}" >> /opt/connection_string.txt
   echo "cloud.aws.s3.bucket-name=${var.bucket_name}" >> /opt/connection_string.txt
+  echo "cloud.aws.sns.topic-arn=${var.cloud_sns_topic_arn}" >> /opt/connection_string.txt
   echo "cloud.aws.credentials.access-key=${var.access_key}" >> /opt/connection_string.txt
   echo "cloud.aws.credentials.secret-key=${var.secret_access_key}" >> /opt/connection_string.txt
 

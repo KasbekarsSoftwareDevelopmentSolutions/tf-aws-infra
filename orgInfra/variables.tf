@@ -330,3 +330,8 @@ variable "mailgun_domain" {
   description = "The mailgun domain to be used by the service, to send emails."
   type        = string
 }
+
+variable "base_url" {
+  description = "The base URL for the application."
+  type        = string
+}
