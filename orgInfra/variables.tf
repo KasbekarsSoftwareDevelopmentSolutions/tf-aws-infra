@@ -79,6 +79,7 @@ variable "application_port" {
   type        = number
 }
 
+
 # RDS Configuration
 variable "rds_master_username" {
   description = "The master username for the RDS instance"
@@ -249,9 +250,18 @@ variable "trusted_aws_principal" {
 }
 
 # Load Balancer Configurations
+variable "application_targetgroup_protocol" {
+  description = "Determines how the Load Balancer forwards requests to the backend targets."
+  type        = string
+}
 variable "listener_port_lb" {
   description = "The port on the load balancer will expect traffic."
   type        = number
+}
+
+variable "listener_protocol_lb" {
+  description = "The protocol on the load balancer will expect traffic."
+  type        = string
 }
 
 variable "healthcheck_interval" {

@@ -1,5 +1,12 @@
 # File orgInfra/modules/launch_template/main.tf
 
+data "aws_secretsmanager_secret_version" "ec2_credentials" {
+  secret_id = var.ec2_credentials_secret_arn
+}
+
+locals {
+  ec2_credentials = jsondecode(data.aws_secretsmanager_secret_version.ec2_credentials.secret_string)
+}
 resource "aws_launch_template" "app_launch_template" {
   name          = var.launch_template_name
   image_id      = var.ami_id
@@ -23,17 +30,44 @@ resource "aws_launch_template" "app_launch_template" {
   #!/bin/bash
   set -e
 
-  # Update package list
+  # Update package list and install necessary tools
   sudo apt-get update -y
+  sudo apt-get install -y jq
+  sudo apt-get install -y unzip
+
+  # Install AWS CLI (if not installed already)
+  if ! command -v aws &> /dev/null; then
+    echo "Installing AWS CLI..."
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install
+  fi
+
+  # Set AWS CLI credentials and profile
+  export AWS_DEFAULT_REGION=us-east-2 
+  aws configure set aws_access_key_id ${local.ec2_credentials["access_key"]}
+  aws configure set aws_secret_access_key ${local.ec2_credentials["secret_key"]}
+  aws configure set default.region ${var.aws_region}
+
+  # Fetch secrets from AWS Secrets Manager
+  EC2_CREDENTIALS=$(aws secretsmanager get-secret-value --secret-id ec2/credentials | jq -r .SecretString)
+  RDS_CREDENTIALS=$(aws secretsmanager get-secret-value --secret-id rds/credentials | jq -r .SecretString)
+  S3_BUCKET_NAME=$(aws secretsmanager get-secret-value --secret-id s3/bucket-name | jq -r .SecretString)
+
+  # Parse credentials
+  EC2_ACCESS_KEY=$(echo $EC2_CREDENTIALS | jq -r .access_key)
+  EC2_SECRET_KEY=$(echo $EC2_CREDENTIALS | jq -r .secret_key)
+  RDS_DB_NAME=$(echo $RDS_CREDENTIALS | jq -r .db_name)
+  RDS_USERNAME=$(echo $RDS_CREDENTIALS | jq -r .username)
+  RDS_PASSWORD=$(echo $RDS_CREDENTIALS | jq -r .password)
 
   # Create the connection_string.txt file
-  echo "spring.datasource.url=jdbc:mysql://${var.rds_endpoint}/${var.db_name}" > /opt/connection_string.txt
-  echo "spring.datasource.username=${var.rds_master_username}" >> /opt/connection_string.txt
-  echo "spring.datasource.password=${var.rds_master_password}" >> /opt/connection_string.txt
-  echo "cloud.aws.s3.bucket-name=${var.bucket_name}" >> /opt/connection_string.txt
-  echo "cloud.aws.sns.topic-arn=${var.cloud_sns_topic_arn}" >> /opt/connection_string.txt
-  echo "cloud.aws.credentials.access-key=${var.access_key}" >> /opt/connection_string.txt
-  echo "cloud.aws.credentials.secret-key=${var.secret_access_key}" >> /opt/connection_string.txt
+  echo "spring.datasource.url=jdbc:mysql://${var.rds_endpoint}/$RDS_DB_NAME" > /opt/connection_string.txt
+  echo "spring.datasource.username=$RDS_USERNAME" >> /opt/connection_string.txt
+  echo "spring.datasource.password=$RDS_PASSWORD" >> /opt/connection_string.txt
+  echo "cloud.aws.s3.bucket-name=$S3_BUCKET_NAME" >> /opt/connection_string.txt
+  echo "cloud.aws.credentials.access-key=$EC2_ACCESS_KEY" >> /opt/connection_string.txt
+  echo "cloud.aws.credentials.secret-key=$EC2_SECRET_KEY" >> /opt/connection_string.txt
 
   # Remove ":3306" from the spring.datasource.url line in connection_string.txt
   sudo sed -i '/^spring.datasource.url/s/:3306//' /opt/connection_string.txt

@@ -29,3 +29,8 @@ output "custom_lambda_sns_access_policy_arn" {
   description = "ARN od teh custom SNS Access policy for the AWS Lambda Function"
   value       = aws_iam_policy.custom_lambda_sns_access_policy.arn
 }
+
+output "custom_ec2_secretmanager_access_policy_arn" {
+  description = "ARN of the custom Ec2 Secret Manager Policy."
+  value       = aws_iam_policy.custom_ec2user_sns_publish_policy.arn
+}

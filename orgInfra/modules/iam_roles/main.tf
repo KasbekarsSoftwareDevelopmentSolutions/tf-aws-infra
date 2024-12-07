@@ -22,12 +22,13 @@ resource "aws_iam_role" "this" {
 
 resource "aws_iam_role_policy_attachment" "policy_attachment" {
   for_each = {
-    AmazonSSMManagedInstanceCore  = var.iam_policy_arn_AmazonSSMManagedInstanceCore
-    CloudWatchAgentServerPolicy   = var.iam_policy_arn_CloudWatchAgentServerPolicy
-    customCloudWatchLogPolicy     = var.iam_policy_arn_customCloudWatchLogPolicy
-    customCloudWatchMetricsPolicy = var.iam_policy_arn_customCloudWatchMetricsPolicy
-    customEc2UserS3Policy         = var.iam_policy_arn_customEc2UserS3Policy
-    customEc2UserSNSPolicy        = var.iam_policy_arn_customEc2UserSNSPolicy
+    AmazonSSMManagedInstanceCore     = var.iam_policy_arn_AmazonSSMManagedInstanceCore
+    CloudWatchAgentServerPolicy      = var.iam_policy_arn_CloudWatchAgentServerPolicy
+    customCloudWatchLogPolicy        = var.iam_policy_arn_customCloudWatchLogPolicy
+    customCloudWatchMetricsPolicy    = var.iam_policy_arn_customCloudWatchMetricsPolicy
+    customEc2UserS3Policy            = var.iam_policy_arn_customEc2UserS3Policy
+    customEc2UserSNSPolicy           = var.iam_policy_arn_customEc2UserSNSPolicy
+    customEc2SUserecretManagerPolicy = var.iam_policy_arn_customEc2SecretManagerAccessPolicy
   }
 
   role       = aws_iam_role.this.name

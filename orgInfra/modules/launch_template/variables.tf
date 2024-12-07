@@ -35,37 +35,47 @@ variable "rds_endpoint" {
   type        = string
 }
 
-variable "rds_master_username" {
-  description = "Master username for the RDS instance"
-  type        = string
-}
+# variable "rds_master_username" {
+#   description = "Master username for the RDS instance"
+#   type        = string
+# }
 
-variable "rds_master_password" {
-  description = "Master password for the RDS instance"
-  type        = string
-}
+# variable "rds_master_password" {
+#   description = "Master password for the RDS instance"
+#   type        = string
+# }
 
-variable "db_name" {
-  description = "Database name"
-  type        = string
-}
+# variable "db_name" {
+#   description = "Database name"
+#   type        = string
+# }
 
-variable "bucket_name" {
-  description = "Name of the S3 bucket"
-  type        = string
-}
+# variable "bucket_name" {
+#   description = "Name of the S3 bucket"
+#   type        = string
+# }
 
-variable "access_key" {
-  description = "AWS access key"
-  type        = string
-}
+# variable "access_key" {
+#   description = "AWS access key"
+#   type        = string
+# }
 
-variable "secret_access_key" {
-  description = "AWS secret access key"
-  type        = string
-}
+# variable "secret_access_key" {
+#   description = "AWS secret access key"
+#   type        = string
+# }
 
 variable "cloud_sns_topic_arn" {
   description = "The ARN of the SNS Topic on which messages are to be published."
+  type        = string
+}
+
+variable "ec2_credentials_secret_arn" {
+  description = "THE ARN of the EC2 Credentials stored in the Secret Manager"
+  type        = string
+}
+
+variable "aws_region" {
+  description = "The aws region in which the Ec2 is deployed."
   type        = string
 }

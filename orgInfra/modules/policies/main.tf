@@ -1,5 +1,11 @@
 # File orgInfra/modules/policies/main.tf
 
+# Fetch current AWS region
+data "aws_region" "current" {}
+
+# Fetch current AWS account ID
+data "aws_caller_identity" "current" {}
+
 # Custom CloudWatch Log Policy
 resource "aws_iam_policy" "custom_cloudwatch_log_policy" {
   name = "custom_CloudWatch_Log_Policy"
@@ -107,6 +113,22 @@ resource "aws_iam_policy" "custom_lambda_sns_access_policy" {
         Effect   = "Allow"
         Action   = "sns:Publish"
         Resource = var.sns_topic_arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "ec2_secrets_policy" {
+  name        = "EC2SecretsManagerAccessPolicy"
+  description = "Policy to allow EC2 instances to fetch secrets from Secrets Manager"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["secretsmanager:GetSecretValue"]
+        Resource = "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:*"
       }
     ]
   })
