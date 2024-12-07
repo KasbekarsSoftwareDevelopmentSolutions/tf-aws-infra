@@ -50,10 +50,10 @@ resource "aws_security_group" "app_security_group" {
 
   # Allow SSH access only from the Load Balancer Security Group
   ingress {
-    from_port       = var.ssh_port
-    to_port         = var.ssh_port
-    protocol        = "tcp"
-    security_groups = [var.lb_securitygroup_id]
+    from_port   = var.ssh_port
+    to_port     = var.ssh_port
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Allow application traffic only from the Load Balancer Security Group on port 8080

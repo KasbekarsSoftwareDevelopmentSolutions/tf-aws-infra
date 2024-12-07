@@ -49,6 +49,8 @@ resource "aws_launch_template" "app_launch_template" {
   echo "SPRING_DATASOURCE_USERNAME=$(grep spring.datasource.username /opt/cloudNativeApplicationFolder/connection_string.txt | cut -d '=' -f2)" | sudo tee -a /etc/cloud-native-app.env
   echo "SPRING_DATASOURCE_PASSWORD=$(grep spring.datasource.password /opt/cloudNativeApplicationFolder/connection_string.txt | cut -d '=' -f2)" | sudo tee -a /etc/cloud-native-app.env
   echo "CLOUD_AWS_S3_BUCKET_NAME=$(grep cloud.aws.s3.bucket-name /opt/cloudNativeApplicationFolder/connection_string.txt | cut -d '=' -f2)" | sudo tee -a /etc/cloud-native-app.env
+  echo "CLOUD_AWS_SNS_TOPIC_ARN=$(grep cloud.aws.sns.topic-arn /opt/cloudNativeApplicationFolder/connection_string.txt | cut -d '=' -f2)" | sudo tee -a /etc/cloud-native-app.env
+
   echo "CLOUD_AWS_CREDENTIALS_ACCESS_KEY=$(grep cloud.aws.credentials.access-key /opt/cloudNativeApplicationFolder/connection_string.txt | cut -d '=' -f2)" | sudo tee -a /etc/cloud-native-app.env
   echo "CLOUD_AWS_CREDENTIALS_SECRET_KEY=$(grep cloud.aws.credentials.secret-key /opt/cloudNativeApplicationFolder/connection_string.txt | cut -d '=' -f2)" | sudo tee -a /etc/cloud-native-app.env
 
