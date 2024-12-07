@@ -1,14 +1,18 @@
 # File orgInfra/modules/rds/variables.tf
 
-variable "rds_master_username" {
-  description = "The master username for the RDS instance"
+variable "rds_credentials_secret_arn" {
+  description = "Secrets Manager ARN for RDS credentials"
   type        = string
 }
+# variable "rds_master_username" {
+#   description = "The master username for the RDS instance"
+#   type        = string
+# }
 
-variable "rds_master_password" {
-  description = "The master password for the RDS instance"
-  type        = string
-}
+# variable "rds_master_password" {
+#   description = "The master password for the RDS instance"
+#   type        = string
+# }
 
 variable "private_subnet_ids" {
   description = "List of private subnet IDs where the RDS instance will be created"
@@ -51,11 +55,11 @@ variable "multi_az" {
   default     = false
 }
 
-variable "db_name" {
-  description = "The name of the database to create"
-  type        = string
-  default     = "csye6225"
-}
+# variable "db_name" {
+#   description = "The name of the database to create"
+#   type        = string
+#   default     = "csye6225"
+# }
 
 variable "db_instance_identifier" {
   description = "Identifier for the RDS instance"

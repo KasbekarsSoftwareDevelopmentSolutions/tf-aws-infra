@@ -45,10 +45,10 @@ variable "s3_lambda_bin_key" {
   type        = string
 }
 
-variable "mailgun_api_key" {
-  description = "The MailGun account API Key."
-  type        = string
-}
+# variable "mailgun_api_key" {
+#   description = "The MailGun account API Key."
+#   type        = string
+# }
 
 variable "mailgun_domain" {
   description = "The mailgun domain to be used by the service, to send emails."
@@ -57,5 +57,10 @@ variable "mailgun_domain" {
 
 variable "base_url" {
   description = "The base URL for the application."
+  type        = string
+}
+
+variable "lambda_email_credentials_secret_arn" {
+  description = "Secrets Manager ARN for Lambda email credentials"
   type        = string
 }

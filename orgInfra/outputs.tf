@@ -74,11 +74,13 @@ output "rds_port" {
 output "db_name" {
   description = "The name of the database"
   value       = module.rds.db_name
+  sensitive   = true
 }
 
 output "rds_master_username" {
   description = "The master username for the RDS instance"
   value       = module.rds.rds_master_username
+  sensitive   = true
 }
 
 # S3 Outputs

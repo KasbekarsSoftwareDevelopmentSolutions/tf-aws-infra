@@ -82,6 +82,19 @@ module "s3_bucket_lifecycle" {
   depends_on = [module.s3_bucket]
 }
 
+# Call the Secrets Manager Module
+module "kms" {
+  source              = "./modules/kms"
+  rds_master_username = var.rds_master_username
+  bucket_name         = module.s3_bucket.bucket_name
+  db_name             = var.db_name
+  ec2_access_key      = var.ec2_user_access_key
+  ec2_secret_key      = var.ec2_user_secret_access_key
+  mailgun_api_key     = var.mailgun_api_key
+
+  depends_on = [module.s3_bucket]
+}
+
 # Call the IAM Policies Configuration module
 module "policies" {
   source        = "./modules/policies"
@@ -94,19 +107,20 @@ module "policies" {
 
 # Call the IAM Roles Configuration module
 module "iam_roles" {
-  source                                         = "./modules/iam_roles"
-  iam_role_name                                  = var.iam_role_name
-  iam_lambda_role_name                           = var.iam_lambda_role_name
-  iam_policy_arn_AmazonSSMManagedInstanceCore    = var.iam_policy_AmazonSSMManagedInstanceCore_arn
-  iam_policy_arn_CloudWatchAgentServerPolicy     = var.iam_policy_CloudWatchAgentServerPolicy_arn
-  iam_policy_arn_customCloudWatchLogPolicy       = module.policies.custom_cloudwatch_log_policy_arn
-  iam_policy_arn_customCloudWatchMetricsPolicy   = module.policies.custom_cloudwatch_metrics_policy_arn
-  iam_policy_arn_customEc2UserS3Policy           = module.policies.custom_ec2user_s3_policy_arn
-  iam_policy_arn_customEc2UserSNSPolicy          = module.policies.custom_ec2user_sns_publish_policy_arn
-  iam_policy_arn_customLambdaRDSAccessPolicy     = module.policies.custom_lambda_rds_access_policy_arn
-  iam_policy_arn_customLambdaSNSAccessPolicy     = module.policies.custom_lambda_sns_access_policy_arn
-  iam_policy_arn_AWSLambdaVPCAccessExecutionRole = var.iam_policy_AWSLambdaVPCAccessExecutionRole_arn
-  trusted_aws_principal                          = var.trusted_aws_principal
+  source                                            = "./modules/iam_roles"
+  iam_role_name                                     = var.iam_role_name
+  iam_lambda_role_name                              = var.iam_lambda_role_name
+  iam_policy_arn_AmazonSSMManagedInstanceCore       = var.iam_policy_AmazonSSMManagedInstanceCore_arn
+  iam_policy_arn_CloudWatchAgentServerPolicy        = var.iam_policy_CloudWatchAgentServerPolicy_arn
+  iam_policy_arn_customCloudWatchLogPolicy          = module.policies.custom_cloudwatch_log_policy_arn
+  iam_policy_arn_customCloudWatchMetricsPolicy      = module.policies.custom_cloudwatch_metrics_policy_arn
+  iam_policy_arn_customEc2UserS3Policy              = module.policies.custom_ec2user_s3_policy_arn
+  iam_policy_arn_customEc2UserSNSPolicy             = module.policies.custom_ec2user_sns_publish_policy_arn
+  iam_policy_arn_customLambdaRDSAccessPolicy        = module.policies.custom_lambda_rds_access_policy_arn
+  iam_policy_arn_customLambdaSNSAccessPolicy        = module.policies.custom_lambda_sns_access_policy_arn
+  iam_policy_arn_customEc2SecretManagerAccessPolicy = module.policies.custom_ec2_secretmanager_access_policy_arn
+  iam_policy_arn_AWSLambdaVPCAccessExecutionRole    = var.iam_policy_AWSLambdaVPCAccessExecutionRole_arn
+  trusted_aws_principal                             = var.trusted_aws_principal
 
   depends_on = [module.policies]
 }
@@ -155,16 +169,17 @@ module "rds_security_group" {
 
 # Call the RDS module
 module "rds" {
-  source                 = "./modules/rds"
-  rds_master_username    = var.rds_master_username
-  rds_master_password    = var.rds_master_password
-  private_subnet_ids     = module.subnets.private_subnet_ids
-  rds_allocated_storage  = var.rds_allocated_storage
-  rds_storage_type       = var.rds_storage_type
-  rds_instance_class     = var.rds_instance_class
-  publicly_accessible    = var.publicly_accessible
-  multi_az               = var.multi_az
-  db_name                = var.db_name
+  source                     = "./modules/rds"
+  rds_credentials_secret_arn = module.kms.rds_credentials_secret_arn
+  # rds_master_username        = var.rds_master_username
+  # rds_master_password        = var.rds_master_password
+  private_subnet_ids    = module.subnets.private_subnet_ids
+  rds_allocated_storage = var.rds_allocated_storage
+  rds_storage_type      = var.rds_storage_type
+  rds_instance_class    = var.rds_instance_class
+  publicly_accessible   = var.publicly_accessible
+  multi_az              = var.multi_az
+  # db_name                    = var.db_name
   db_instance_identifier = var.db_instance_identifier
   rds_subnet_group_name  = var.rds_subnet_group_name
   rds_param_group_name   = var.rds_param_group_name
@@ -173,7 +188,7 @@ module "rds" {
   db_param_value         = var.db_param_value
   rds_security_group_ids = [module.rds_security_group.rds_security_group_id]
 
-  depends_on = [module.subnets, module.rds_security_group]
+  depends_on = [module.kms, module.subnets, module.rds_security_group]
 }
 
 
@@ -187,9 +202,9 @@ module "load_balancer" {
   vpc_id                   = module.vpc.vpc_id
   app_targetgroup_name     = "${var.vpc_name}-tg"
   app_targetgroup_port     = var.application_port
-  app_targetgroup_protocol = "HTTP"
+  app_targetgroup_protocol = var.application_targetgroup_protocol
   listener_port            = var.listener_port_lb
-  listener_protocol        = "HTTP"
+  listener_protocol        = var.listener_protocol_lb
   app_healthcheck_interval = var.healthcheck_interval
   certificate_arn          = var.acm_certificate_arn
 
@@ -222,12 +237,13 @@ module "lambda" {
   rds_security_group_id       = module.rds_security_group.rds_security_group_id
   s3_lambda_bin_bucket_name   = module.s3_bucket.bucket_name
   s3_lambda_bin_key           = module.s3_bucket.java_binaries_key
-  mailgun_api_key             = var.mailgun_api_key
-  mailgun_domain              = var.mailgun_domain
-  private_subnet_ids          = module.subnets.private_subnet_ids
-  base_url                    = var.base_url
+  # mailgun_api_key             = var.mailgun_api_key
+  lambda_email_credentials_secret_arn = module.kms.lambda_email_credentials_secret_arn
+  mailgun_domain                      = var.mailgun_domain
+  private_subnet_ids                  = module.subnets.private_subnet_ids
+  base_url                            = var.base_url
 
-  depends_on = [module.iam_roles, module.rds_security_group, module.s3_bucket, module.subnets]
+  depends_on = [module.iam_roles, module.rds_security_group, module.s3_bucket, module.kms, module.subnets]
 }
 
 module "subscriptions_permissions" {
@@ -265,23 +281,25 @@ module "subscriptions_permissions" {
 
 # Call the EC2 Launch Template
 module "launch_template" {
-  source               = "./modules/launch_template"
-  launch_template_name = "csye6225_asg"
-  ami_id               = var.ami_id
-  instance_type        = var.instance_type
-  key_pair_name        = var.key_pair_name
-  security_group_ids   = [module.security_group.security_group_id]
-  iam_instance_profile = module.iam_roles.iam_instance_profile_name
-  rds_endpoint         = module.rds.rds_endpoint
-  rds_master_username  = module.rds.rds_master_username
-  rds_master_password  = var.rds_master_password
-  db_name              = module.rds.db_name
-  bucket_name          = module.s3_bucket.bucket_name
-  cloud_sns_topic_arn  = module.sns.sns_topic_arn
-  access_key           = var.ec2_user_access_key
-  secret_access_key    = var.ec2_user_secret_access_key
+  source                     = "./modules/launch_template"
+  launch_template_name       = "csye6225_asg"
+  ami_id                     = var.ami_id
+  instance_type              = var.instance_type
+  key_pair_name              = var.key_pair_name
+  security_group_ids         = [module.security_group.security_group_id]
+  iam_instance_profile       = module.iam_roles.iam_instance_profile_name
+  cloud_sns_topic_arn        = module.sns.sns_topic_arn
+  aws_region                 = var.aws_region
+  ec2_credentials_secret_arn = module.kms.ec2_credentials_secret_arn
+  rds_endpoint               = module.rds.rds_endpoint
+  # rds_master_username        = module.rds.rds_master_username
+  # rds_master_password        = var.rds_master_password
+  # db_name                    = module.rds.db_name
+  # bucket_name                = module.s3_bucket.bucket_name
+  # access_key                 = var.ec2_user_access_key
+  # secret_access_key          = var.ec2_user_secret_access_key
 
-  depends_on = [module.security_group, module.iam_roles, module.rds, module.s3_bucket]
+  depends_on = [module.security_group, module.iam_roles, module.rds, module.kms]
 }
 
 # Call the Auto Sacling Module

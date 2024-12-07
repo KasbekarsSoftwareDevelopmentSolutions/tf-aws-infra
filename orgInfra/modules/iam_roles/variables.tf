@@ -59,3 +59,8 @@ variable "iam_policy_arn_AWSLambdaVPCAccessExecutionRole" {
   description = "Provides minimum permissions for a Lambda function to execute while accessing a resource within a VPC - create, describe, delete network interfaces and write permissions to CloudWatch Logs."
   type        = string
 }
+
+variable "iam_policy_arn_customEc2SecretManagerAccessPolicy" {
+  description = "Provide the Ec2 Instances access to the Secret Manager to fetch required secrets."
+  type        = string
+}

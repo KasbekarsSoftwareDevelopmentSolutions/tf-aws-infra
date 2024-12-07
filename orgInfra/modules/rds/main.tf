@@ -1,13 +1,21 @@
 # File orgInfra/modules/rds/main.tf
 
+data "aws_secretsmanager_secret_version" "rds_credentials" {
+  secret_id = var.rds_credentials_secret_arn
+}
+
+locals {
+  rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.rds_credentials.secret_string)
+}
+
 resource "aws_db_instance" "rds_instance" {
   allocated_storage      = var.rds_allocated_storage
   storage_type           = var.rds_storage_type
   engine                 = var.db_engine
   instance_class         = var.rds_instance_class
-  db_name                = var.db_name
-  username               = var.rds_master_username
-  password               = var.rds_master_password
+  db_name                = local.rds_credentials["db_name"]
+  username               = local.rds_credentials["username"]
+  password               = local.rds_credentials["password"]
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids = var.rds_security_group_ids
   publicly_accessible    = var.publicly_accessible
