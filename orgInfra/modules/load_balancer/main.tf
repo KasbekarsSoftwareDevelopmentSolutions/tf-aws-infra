@@ -38,7 +38,7 @@ resource "aws_lb_listener" "app_listener" {
   load_balancer_arn = aws_lb.app_load_balancer.arn
   port              = var.listener_port
   protocol          = var.listener_protocol
-  ssl_policy        = "ELBSecurityPolicy-2016-08" # Example SSL policy
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
   certificate_arn   = var.certificate_arn
 
   default_action {
