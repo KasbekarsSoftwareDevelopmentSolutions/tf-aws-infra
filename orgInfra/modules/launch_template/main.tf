@@ -66,6 +66,7 @@ resource "aws_launch_template" "app_launch_template" {
   echo "spring.datasource.username=$RDS_USERNAME" >> /opt/connection_string.txt
   echo "spring.datasource.password=$RDS_PASSWORD" >> /opt/connection_string.txt
   echo "cloud.aws.s3.bucket-name=$S3_BUCKET_NAME" >> /opt/connection_string.txt
+  echo "cloud.aws.sns.topic-arn=${var.cloud_sns_topic_arn}" >> /opt/connection_string.txt
   echo "cloud.aws.credentials.access-key=$EC2_ACCESS_KEY" >> /opt/connection_string.txt
   echo "cloud.aws.credentials.secret-key=$EC2_SECRET_KEY" >> /opt/connection_string.txt
 
